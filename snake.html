@@ -128,13 +128,15 @@ body {
 </head>
 <body>
   <div id="scoreboard">Score: <span id="score-display">0</span></div>
-  <canvas id="game-board" width="400" height="400"></canvas>
-  <div id="message-box"></div>
-  <div class="button-container">
-    <button id="start-button" class="game-button">Start</button>
-    <button id="pause-button" class="game-button">Pause</button>
-    <button id="sound-button" class="game-button">Sound On</button>
-  </div>
+    <canvas id="game-board" width="400" height="400"></canvas>
+
+    <div id="message-box"></div>
+
+    <div class="button-container">
+      <button id="start-button" class="game-button">Start</button>
+      <button id="pause-button" class="game-button">Pause</button>
+      <button id="sound-button" class="game-button">Sound On</button>
+    </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script>
 const canvas = document.getElementById('game-board');
@@ -146,6 +148,9 @@ const soundButton = document.getElementById('sound-button');
 const scoreDisplay = document.getElementById('score-display');
 const scoreboard = document.getElementById('scoreboard');
 const gridSize = 20;
+let headColor = '#4ade80';
+let bodyColor = '#15803d';
+let outlineColor = '#064e3b';
 let snake = [{ x: 10, y: 10 }];
 let food = { x: 15, y: 15 };
 let direction = 'right';
@@ -173,14 +178,14 @@ function playGameOverSound() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = i === 0 ? '#a7f3d0' : '#34d399';
+    ctx.fillStyle = i === 0 ? headColor : bodyColor;
     ctx.fillRect(
       snake[i].x * gridSize,
       snake[i].y * gridSize,
       gridSize,
       gridSize
     );
-    ctx.strokeStyle = '#064e3b';
+    ctx.strokeStyle = outlineColor;
     ctx.strokeRect(
       snake[i].x * gridSize,
       snake[i].y * gridSize,
@@ -281,6 +286,60 @@ document.addEventListener('keydown', (event) => {
     case 'ArrowRight':
       if (direction !== 'left') direction = 'right';
       synth.triggerAttackRelease("C4", "8n");
+      break;
+  }
+});
+  document.addEventListener('keydown', (event) => {
+  switch (event.key) {
+     case '1':
+      headColor = '#f87171';
+      bodyColor = '#fca5a5';
+      outlineColor = '#7f1d1d';
+      break;
+    case '2':
+      headColor = '#fb923c';
+      bodyColor = '#ea580c';
+      outlineColor = '#7c2d12';
+      break;
+    case '3':
+      headColor = '#facc15';
+      bodyColor = '#fde68a';
+      outlineColor = '#78350f';
+      break;
+    case '4':
+      headColor = '#4ade80';
+      bodyColor = '#15803d';
+      outlineColor = '#064e3b';
+      break;
+    case '5':
+      headColor = '#60a5fa';
+      bodyColor = '#93c5fd';
+      outlineColor = '#1e3a8a';
+      break;
+    case '6':
+      headColor = '#a78bfa';
+      bodyColor = '#c4b5fd';
+      outlineColor = '#4c1d95';
+      break;
+    case '7':
+      headColor = '#f472b6';
+      bodyColor = '#f9a8d4';
+      outlineColor = '#831843';
+      break;
+    case '8':
+      headColor = '#ffffff';
+      bodyColor = '#f3f4f6';
+      outlineColor = '#9ca3af';
+      break;
+    case '9':
+      headColor = '#a16207';
+      bodyColor = '#78350f';
+      outlineColor = '#451a03';
+      break;
+    case '0':
+      headColor = '#6b7280';
+      bodyColor = '#374151';
+      outlineColor = '#111827';
       break;
   }
 });
