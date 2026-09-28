@@ -32,6 +32,29 @@
       justify-content: center;
     }
 
+.game-link {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+    
+.game-link::after {
+  content: attr(data-hover);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  color: white;
+}
+
+.game-link:hover::after {
+  opacity: 1;
+}
+
     a {
       background: #14b8a6;
       border-radius: 8px;
@@ -52,7 +75,7 @@
   <main>
     <h1>Choose a Game</h1>
     <nav class="games" aria-label="Games">
-      <a href="snakemenu.html">Snake</a>
+      <a href="snakemenu.html" class="game-link" data-hover="Eat Food, Avoid Walls, Have Fun">Snake</a>
       <!-- Add more games here, for example: <a href="tetris.html">Play Tetris</a> -->
     </nav>
   </main>
