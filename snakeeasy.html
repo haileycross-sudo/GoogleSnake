@@ -21,10 +21,10 @@ body {
 }
 @keyframes fadeInBackground {
   from {
-    background-color: #55181d;
+    background-color: #0f172a;
   }
   to {
-    background-color: #55181d;
+    background-color: #0f172a;
   }
 }
 #game-board {
@@ -147,14 +147,14 @@ const pauseButton = document.getElementById('pause-button');
 const soundButton = document.getElementById('sound-button');
 const scoreDisplay = document.getElementById('score-display');
 const scoreboard = document.getElementById('scoreboard');
-const gridSize = 15;
+const gridSize = 25;
 let headColor = '#15803d';
 let bodyColor = '#4ade80';
 let outlineColor = '#064e3b';
 let snake = [{ x: 10, y: 10 }];
 let food = { x: 15, y: 15 };
 let direction = 'right';
-let gameSpeed = 200;
+let gameSpeed = 100;
 let gameRunning = false;
 let gameInterval;
 let score = 0;
@@ -228,7 +228,7 @@ function update() {
   snake.unshift(head);
   if (head.x === food.x && head.y === food.y) {
     playEatSound();
-    score += 5;
+    score += 15;
     updateScoreDisplay();
     food = {
       x: Math.floor(Math.random() * (canvas.width / gridSize)),
