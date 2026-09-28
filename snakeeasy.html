@@ -136,6 +136,7 @@ body {
       <button id="start-button" class="game-button">Start</button>
       <button id="pause-button" class="game-button">Pause</button>
       <button id="sound-button" class="game-button">Sound On</button>
+      <button id="back-button" class="game-button">Back</button>
     </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 <script>
@@ -145,6 +146,7 @@ const messageBox = document.getElementById('message-box');
 const startButton = document.getElementById('start-button');
 const pauseButton = document.getElementById('pause-button');
 const soundButton = document.getElementById('sound-button');
+const backButton = document.getElementById('back-button');
 const scoreDisplay = document.getElementById('score-display');
 const scoreboard = document.getElementById('scoreboard');
 const gridSize = 25;
@@ -349,6 +351,9 @@ soundButton.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
   soundButton.textContent = soundEnabled ? "Sound On" : "Sound Off";
   mutedText = soundEnabled ? "Sound On" : "Sound Off";
+});
+backButton.addEventListener('click', () => {
+  window.location.href = 'snakemenu.html';
 });
 updateScoreDisplay();
 draw();
