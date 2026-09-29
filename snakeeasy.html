@@ -155,6 +155,7 @@ let bodyColor = '#4ade80';
 let outlineColor = '#064e3b';
 let snake = [{ x: 8, y: 8 }];
 let food = { x: 15, y: 15 };
+let food2 = { x: 15, y: 15 };
 let direction = 'right';
 let gameSpeed = 125;
 let gameRunning = false;
@@ -200,6 +201,11 @@ function draw() {
   ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
   ctx.strokeStyle = '#991b1b';
   ctx.strokeRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+
+  ctx.fillStyle = '#fca5a5';
+  ctx.fillRect(food2.x * gridSize, food2.y * gridSize, gridSize, gridSize);
+  ctx.strokeStyle = '#991b1b';
+  ctx.strokeRect(food2.x * gridSize, food2.y * gridSize, gridSize, gridSize);
 }
 function update() {
   if (!gameRunning) return;
@@ -229,19 +235,29 @@ function update() {
     return;
   }
   snake.unshift(head);
-  if (head.x === food.x && head.y === food.y) {
+  if (head.x === food.x && head.y === food.y || head.x === food2.x && head.y === food2.y) {
     playEatSound();
     score += 15;
     updateScoreDisplay();
-    food = {
-      x: Math.floor(Math.random() * (canvas.width / gridSize)),
-      y: Math.floor(Math.random() * (canvas.height / gridSize)),
-    };
-
-  while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
-    food.x = Math.floor(Math.random() * (canvas.width / gridSize));
-    food.y = Math.floor(Math.random() * (canvas.height / gridSize));
-  }
+    if (head.x === food.x && head.y === food.y) {
+      food = {
+        x: Math.floor(Math.random() * (canvas.width / gridSize)),
+        y: Math.floor(Math.random() * (canvas.height / gridSize)),
+      };
+      while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+        food.x = Math.floor(Math.random() * (canvas.width / gridSize));
+        food.y = Math.floor(Math.random() * (canvas.height / gridSize));
+      }
+    } else if (head.x === food2.x && head.y === food2.y) {
+      food2 = {
+        x: Math.floor(Math.random() * (canvas.width / gridSize)),
+        y: Math.floor(Math.random() * (canvas.height / gridSize)),
+      };
+      while (snake.some(segment => segment.x === food2.x && segment.y === food2.y)) {
+        food2.x = Math.floor(Math.random() * (canvas.width / gridSize));
+        food2.y = Math.floor(Math.random() * (canvas.height / gridSize));
+      }
+    }
 
   } else {
     snake.pop();
