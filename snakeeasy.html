@@ -153,11 +153,12 @@ const gridSize = 25;
 let headColor = '#15803d';
 let bodyColor = '#4ade80';
 let outlineColor = '#064e3b';
-let snake = [{ x: 10, y: 10 }];
+let snake = [{ x: 8, y: 8 }];
 let food = { x: 15, y: 15 };
 let direction = 'right';
-let gameSpeed = 200;
+let gameSpeed = 125;
 let gameRunning = false;
+let gameHasEnded = false;
 let gameInterval;
 let score = 0;
 let soundEnabled = true;
@@ -251,46 +252,35 @@ function checkCollision(head) {
 }
 function startGame() {
   if (gameRunning) return;
+  gameHasEnded = false;
   gameRunning = true;
+  pauseButton.textContent = 'Pause';
   messageBox.textContent = 'Game Started!';
   gameInterval = setInterval(update, gameSpeed);
   score = 0;
   updateScoreDisplay();
-  snake = [{ x: 10, y: 10 }];
+  snake = [{ x: 8, y: 8 }];
   direction = 'right';
 }
 function pauseGame() {
   gameRunning = false;
+  pauseButton.textContent = 'Resume';
   messageBox.textContent = 'Game Paused!';
   clearInterval(gameInterval);
+}
+function unpauseGame() {
+  gameRunning = true;
+  pauseButton.textContent = 'Pause';
+  messageBox.textContent = 'Game Resumed!';
+  gameInterval = setInterval(update, gameSpeed);
 }
 function gameOver() {
   playGameOverSound();
   gameRunning = false;
+  gameHasEnded = true;
   messageBox.textContent = 'Game Over! Press Start to play again.';
   clearInterval(gameInterval);
 }
-document.addEventListener('keydown', (event) => {
-  if (!gameRunning) return;
-  switch (event.key) {
-    case 'ArrowUp':
-      if (direction !== 'down') direction = 'up';
-      synth.triggerAttackRelease("G4", "8n");
-      break;
-    case 'ArrowDown':
-      if (direction !== 'up') direction = 'down';
-      synth.triggerAttackRelease("F4", "8n");
-      break;
-    case 'ArrowLeft':
-      if (direction !== 'right') direction = 'left';
-      synth.triggerAttackRelease("D4", "8n");
-      break;
-    case 'ArrowRight':
-      if (direction !== 'left') direction = 'right';
-      synth.triggerAttackRelease("C4", "8n");
-      break;
-  }
-});
   document.addEventListener('keydown', (event) => {
   switch (event.key) {
      case '1':
@@ -345,8 +335,39 @@ document.addEventListener('keydown', (event) => {
       break;
   }
 });
-startButton.addEventListener('click', startGame);
-pauseButton.addEventListener('click', pauseGame);
+startButton.addEventListener('click', (event) => {
+    startGame();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Space') {
+    event.preventDefault();
+    if (gameHasEnded) startGame();
+    else if (gameRunning) pauseGame();
+    else unpauseGame();
+    return;
+  }
+
+  if (!gameRunning) return;
+
+  switch (event.key) {
+    case 'ArrowUp':
+      if (direction !== 'down') direction = 'up';
+      synth.triggerAttackRelease("G4", "8n");
+      break;
+    case 'ArrowDown':
+      if (direction !== 'up') direction = 'down';
+      synth.triggerAttackRelease("F4", "8n");
+      break;
+    case 'ArrowLeft':
+      if (direction !== 'right') direction = 'left';
+      synth.triggerAttackRelease("D4", "8n");
+      break;
+    case 'ArrowRight':
+      if (direction !== 'left') direction = 'right';
+      synth.triggerAttackRelease("C4", "8n");
+      break;
+  }
+});
 soundButton.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
   soundButton.textContent = soundEnabled ? "Sound On" : "Sound Off";
