@@ -234,6 +234,12 @@ function update() {
       x: Math.floor(Math.random() * (canvas.width / gridSize)),
       y: Math.floor(Math.random() * (canvas.height / gridSize)),
     };
+    
+    while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+      food.x = Math.floor(Math.random() * (canvas.width / gridSize));
+      food.y = Math.floor(Math.random() * (canvas.height / gridSize));
+    }
+
   } else {
     snake.pop();
   }
