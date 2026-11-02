@@ -33,7 +33,6 @@ body {
   border-radius: 12px;
 }
 #game-board:hover {
-  transform: scale(1.06);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
 }
 #message-box {
@@ -80,12 +79,9 @@ body {
 }
 </style>
 <body>
+    <canvas id="game-board" width="800" height="500"></canvas>
+    <div id="scoreboard">Score: <span id="score-display">0</span></div>
 
-  <div id="scoreboard">Score: <span id="score-display">0</span></div>
-    <canvas id="game-board" width="400" height="400"></canvas>
-
-    <h1>Pac-Man</h1>
-        <!-- Game board content goes here -->
     </div>
     <div id="message-box">Use arrow keys to move Pac-Man!</div>
     <div class="button-container">
@@ -105,70 +101,204 @@ const backButton = document.getElementById('back-button');
 const scoreDisplay = document.getElementById('score-display');
 const scoreboard = document.getElementById('scoreboard');
 const gridSize = 25;
+const columns = canvas.width / gridSize;
+const rows = canvas.height / gridSize;
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+let food = { x: 1, y: 1 };
 let pacman = { x: 10, y: 10 };
 let redGhost = { x: 5, y: 5 };
 let blueGhost = { x: 15, y: 5 };
-let orangeGhost = { x: 5, y: 15 };
-let pinkGhost = { x: 15, y: 15 };
+let orangeGhost = { x: 20, y: 20 };
+let pinkGhost = { x: 25, y: 25 };
 let direction = 'right';
+let nextDirection = 'right';
 let gameSpeed = 125;
 let gameRunning = false;
 let gameHasEnded = false;
 let gameInterval;
 let score = 0;
 let soundEnabled = true;
+let audioContext;
+const ghostColors = ['#ef4444', '#3b82f6', '#f97316', '#ec4899'];
+const updateScoreDisplay = () => {
+  scoreDisplay.textContent = score;
+};
 
-  function startGame() {
-      // Logic to start the Pac-Man game
-      document.getElementById('message-box').textContent = "Game Started! Eat all the dots!";
+function drawPacman() {
+  ctx.fillStyle = '#facc15';
+  ctx.beginPath();
+  ctx.arc(pacman.x * gridSize + gridSize / 2, pacman.y * gridSize + gridSize / 2, gridSize / 2, 0.25 * Math.PI, 1.75 * Math.PI);
+  ctx.lineTo(pacman.x * gridSize + gridSize / 2, pacman.y * gridSize + gridSize / 2);
+  ctx.fill();
+}
+function drawGhost(ghost, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(ghost.x * gridSize + gridSize / 2, ghost.y * gridSize + gridSize / 2, gridSize / 2, Math.PI, 0);
+  ctx.lineTo(ghost.x * gridSize + gridSize, ghost.y * gridSize + gridSize);
+  ctx.lineTo(ghost.x * gridSize, ghost.y * gridSize + gridSize);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#f8fafc';
+  ctx.beginPath();
+  ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 5, 0, Math.PI * 2);
+  ctx.fill();
+  drawPacman();
+  [redGhost, blueGhost, orangeGhost, pinkGhost].forEach((ghost, index) => {
+    drawGhost(ghost, ghostColors[index]);
+  });
+}
+
+function playTone(frequency, duration = 0.12) {
+  if (!soundEnabled || !AudioContextClass) return;
+
+  audioContext ??= new AudioContextClass();
+  if (audioContext.state === 'suspended') audioContext.resume();
+
+  const oscillator = audioContext.createOscillator();
+  const volume = audioContext.createGain();
+  const now = audioContext.currentTime;
+  oscillator.frequency.value = frequency;
+  volume.gain.setValueAtTime(0.12, now);
+  volume.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  oscillator.connect(volume);
+  volume.connect(audioContext.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration);
+}
+
+function playEatSound() {
+  playTone(1047);
+}
+function playGameOverSound() {
+  [65, 82, 98, 117].forEach((frequency) => playTone(frequency, 0.5));
+}
+
+function resetGame() {
+  clearInterval(gameInterval);
+  pacman = { x: 10, y: 10 };
+  redGhost = { x: 5, y: 5 };
+  blueGhost = { x: 15, y: 5 };
+  orangeGhost = { x: 20, y: 15 };
+  pinkGhost = { x: 25, y: 15 };
+  direction = 'right';
+  nextDirection = 'right';
+  score = 0;
+  gameRunning = false;
+  gameHasEnded = false;
+  updateScoreDisplay();
+  placeFood();
+  drawGame();
+}
+
+function placeFood() {
+  do {
+    food = {
+      x: Math.floor(Math.random() * columns),
+      y: Math.floor(Math.random() * rows)
+    };
+  } while ([pacman, redGhost, blueGhost, orangeGhost, pinkGhost].some(
+    (entity) => entity.x === food.x && entity.y === food.y
+  ));
+}
+
+function endGame(message) {
+  gameRunning = false;
+  gameHasEnded = true;
+  clearInterval(gameInterval);
+  messageBox.textContent = message;
+  playGameOverSound();
+}
+
+function moveGhost(ghost) {
+  const moves = [
+    { x: 0, y: -1 },
+    { x: 0, y: 1 },
+    { x: -1, y: 0 },
+    { x: 1, y: 0 }
+  ];
+  const move = moves[Math.floor(Math.random() * moves.length)];
+  ghost.x = Math.max(0, Math.min(columns - 1, ghost.x + move.x));
+  ghost.y = Math.max(0, Math.min(rows - 1, ghost.y + move.y));
+}
+
+function updateGame() {
+  direction = nextDirection;
+  if (direction === 'up') pacman.y--;
+  if (direction === 'down') pacman.y++;
+  if (direction === 'left') pacman.x--;
+  if (direction === 'right') pacman.x++;
+
+  if (pacman.x < 0 || pacman.x >= columns || pacman.y < 0 || pacman.y >= rows) {
+    endGame('Game over! Press Start to try again.');
+    return;
   }
-  function resetGame() {
-      // Logic to reset the Pac-Man game
-      document.getElementById('message-box').textContent = "Game Reset! Use arrow keys to move Pac-Man!";
-  }   
-  function updateGame() {
-      // Logic to update the game state, such as moving Pac-Man and ghosts
-  } 
+
+  [redGhost, blueGhost, orangeGhost, pinkGhost].forEach(moveGhost);
+  const ghosts = [redGhost, blueGhost, orangeGhost, pinkGhost];
+  if (ghosts.some((ghost) => ghost.x === pacman.x && ghost.y === pacman.y)) {
+    drawGame();
+    endGame('Caught by a ghost! Press Start to try again.');
+    return;
+  }
+
+  if (pacman.x === food.x && pacman.y === food.y) {
+    score += 10;
+    updateScoreDisplay();
+    placeFood();
+    playEatSound();
+  }
+
+  drawGame();
+}
+
+function startGame() {
+  if (gameRunning) return;
+  if (gameHasEnded) resetGame();
+  gameRunning = true;
+  messageBox.textContent = 'Use arrow keys to move Pac-Man!';
+  gameInterval = window.setInterval(updateGame, gameSpeed);
+}
 
 document.addEventListener('keydown', (event) => {
   if (event.code === 'Space') {
+    event.preventDefault();
     startGame();
     return;
   }
 
   if (!gameRunning) return;
 
-  switch (event.key) {
-    case 'ArrowUp':
-      if (direction !== 'down') direction = 'up';
-      synth.triggerAttackRelease("G4", "8n");
-      break;
-    case 'ArrowDown':
-      if (direction !== 'up') direction = 'down';
-      synth.triggerAttackRelease("F4", "8n");
-      break;
-    case 'ArrowLeft':
-      if (direction !== 'right') direction = 'left';
-      synth.triggerAttackRelease("D4", "8n");
-      break;
-    case 'ArrowRight':
-      if (direction !== 'left') direction = 'right';
-      synth.triggerAttackRelease("C4", "8n");
-      break;
-  }
+  const directions = {
+    ArrowUp: ['up', 'down', 784],
+    ArrowDown: ['down', 'up', 698],
+    ArrowLeft: ['left', 'right', 587],
+    ArrowRight: ['right', 'left', 523]
+  };
+  const requestedDirection = directions[event.key];
+  if (!requestedDirection) return;
+  event.preventDefault();
 
+  const [newDirection, oppositeDirection, frequency] = requestedDirection;
+  if (nextDirection !== oppositeDirection) {
+    nextDirection = newDirection;
+    playTone(frequency);
+  }
 });
-startButton.addEventListener('click', (event) => {
-  startGame();
-});
+startButton.addEventListener('click', startGame);
 soundButton.addEventListener('click', () => {
   soundEnabled = !soundEnabled;
   soundButton.textContent = soundEnabled ? "Sound On" : "Sound Off";
-  mutedText = soundEnabled ? "Sound On" : "Sound Off";
 });
 backButton.addEventListener('click', () => {
   window.location.href = 'index.html';
 });
+
+resetGame();
 </script>  
 </body>
 </html>
