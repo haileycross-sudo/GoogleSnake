@@ -123,12 +123,24 @@ const ghostColors = ['#ef4444', '#3b82f6', '#f97316', '#ec4899'];
 const updateScoreDisplay = () => {
   scoreDisplay.textContent = score;
 };
-
 function drawPacman() {
+  const facing = {
+    right: 0,
+    down: Math.PI / 2,
+    left: Math.PI,
+    up: -Math.PI / 2
+  }[direction];
+
+  const centerX = pacman.x * gridSize + gridSize / 2;
+  const centerY = pacman.y * gridSize + gridSize / 2;
+
   ctx.fillStyle = '#facc15';
   ctx.beginPath();
-  ctx.arc(pacman.x * gridSize + gridSize / 2, pacman.y * gridSize + gridSize / 2, gridSize / 2, 0.25 * Math.PI, 1.75 * Math.PI);
-  ctx.lineTo(pacman.x * gridSize + gridSize / 2, pacman.y * gridSize + gridSize / 2);
+  ctx.arc(centerX, centerY, gridSize / 2,
+    facing + 0.25 * Math.PI,
+    facing + 1.75 * Math.PI
+  );
+  ctx.lineTo(centerX, centerY);
   ctx.fill();
 }
 function drawGhost(ghost, color) {
