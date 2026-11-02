@@ -25,8 +25,8 @@ body {
   }
 }
 #game-board {
-  background-color: #6ee7b7;
-  border: 6px solid #14b8a6;
+  background-color: #1a1a38;
+  border: 6px solid #000000;
   margin-bottom: 25px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
   transition: transform 0.2s ease, box  -shadow 0.2s ease;
@@ -80,31 +80,95 @@ body {
 }
 </style>
 <body>
+
+  <div id="scoreboard">Score: <span id="score-display">0</span></div>
+    <canvas id="game-board" width="400" height="400"></canvas>
+
     <h1>Pac-Man</h1>
-    <div id="game-board">
         <!-- Game board content goes here -->
     </div>
     <div id="message-box">Use arrow keys to move Pac-Man!</div>
     <div class="button-container">
-        <button class="game-button" onclick="startGame()">Start Game</button>
-        <button class="game-button" onclick="resetGame()">Reset Game</button>
-        <button class="game-button" onclick="soundToggle()">Toggle Sound</button>
-        <button class="game-button" onclick="backToMenu()">Back to Menu</button>
+      <button id="start-button" class="game-button">Start</button>
+      <button id="sound-button" class="game-button">Sound On</button>
+      <button id="back-button" class="game-button">Back</button>
     </div>
 
 
 <script>
-    function startGame() {
-        // Logic to start the Pac-Man game
-        document.getElementById('message-box').textContent = "Game Started! Eat all the dots!";
-    }
-    function resetGame() {
-        // Logic to reset the Pac-Man game
-        document.getElementById('message-box').textContent = "Game Reset! Use arrow keys to move Pac-Man!";
-    }   
-    function updateGame() {
-        // Logic to update the game state, such as moving Pac-Man and ghosts
-    } 
+const canvas = document.getElementById('game-board');
+const ctx = canvas.getContext('2d');
+const messageBox = document.getElementById('message-box');
+const startButton = document.getElementById('start-button');
+const soundButton = document.getElementById('sound-button');
+const backButton = document.getElementById('back-button');
+const scoreDisplay = document.getElementById('score-display');
+const scoreboard = document.getElementById('scoreboard');
+const gridSize = 25;
+let pacman = { x: 10, y: 10 };
+let redGhost = { x: 5, y: 5 };
+let blueGhost = { x: 15, y: 5 };
+let orangeGhost = { x: 5, y: 15 };
+let pinkGhost = { x: 15, y: 15 };
+let direction = 'right';
+let gameSpeed = 125;
+let gameRunning = false;
+let gameHasEnded = false;
+let gameInterval;
+let score = 0;
+let soundEnabled = true;
+
+  function startGame() {
+      // Logic to start the Pac-Man game
+      document.getElementById('message-box').textContent = "Game Started! Eat all the dots!";
+  }
+  function resetGame() {
+      // Logic to reset the Pac-Man game
+      document.getElementById('message-box').textContent = "Game Reset! Use arrow keys to move Pac-Man!";
+  }   
+  function updateGame() {
+      // Logic to update the game state, such as moving Pac-Man and ghosts
+  } 
+
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Space') {
+    startGame();
+    return;
+  }
+
+  if (!gameRunning) return;
+
+  switch (event.key) {
+    case 'ArrowUp':
+      if (direction !== 'down') direction = 'up';
+      synth.triggerAttackRelease("G4", "8n");
+      break;
+    case 'ArrowDown':
+      if (direction !== 'up') direction = 'down';
+      synth.triggerAttackRelease("F4", "8n");
+      break;
+    case 'ArrowLeft':
+      if (direction !== 'right') direction = 'left';
+      synth.triggerAttackRelease("D4", "8n");
+      break;
+    case 'ArrowRight':
+      if (direction !== 'left') direction = 'right';
+      synth.triggerAttackRelease("C4", "8n");
+      break;
+  }
+
+});
+startButton.addEventListener('click', (event) => {
+  startGame();
+});
+soundButton.addEventListener('click', () => {
+  soundEnabled = !soundEnabled;
+  soundButton.textContent = soundEnabled ? "Sound On" : "Sound Off";
+  mutedText = soundEnabled ? "Sound On" : "Sound Off";
+});
+backButton.addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
 </script>  
 </body>
 </html>
