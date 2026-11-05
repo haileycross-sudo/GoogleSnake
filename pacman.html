@@ -227,6 +227,51 @@ function endGame(message) {
 }
 
 function moveGhost(ghost) {
+
+  if (ghost == redGhost) {
+    if (pacman.x < ghost.x) ghost.x--;
+    else if (pacman.x > ghost.x) ghost.x++;
+    if (pacman.y < ghost.y) ghost.y--;
+    else if (pacman.y > ghost.y) ghost.y++;
+    return;
+  }
+
+  if (ghost == blueGhost) {
+    if (pacman.x < ghost.x) ghost.x--;
+    else if (pacman.x > ghost.x) ghost.x++;
+    return;
+  }
+
+  if (ghost == orangeGhost) {
+    if (pacman.x < ghost.x + 8) ghost.x--;
+    else if (pacman.x > ghost.x + 8) ghost.x++;
+    if (pacman.y < ghost.y + 8) ghost.y--;
+    else if (pacman.y > ghost.y + 8) ghost.y++;
+    return;
+  }
+
+  if (ghost == pinkGhost) {
+    let targetX = pacman.x;
+    let targetY = pacman.y;
+    if (direction === 'up') {
+      targetY -= 4;
+    } else if (direction === 'down') {
+      targetY += 4;
+    } else if (direction === 'left') {
+      targetX -= 4;
+    } else if (direction === 'right') {
+      targetX += 4;
+    }
+
+    targetX = Math.max(0, Math.min(columns - 1, targetX));
+    targetY = Math.max(0, Math.min(rows - 1, targetY));
+    if (targetX < ghost.x) ghost.x--;
+    else if (targetX > ghost.x) ghost.x++;
+    if (targetY < ghost.y) ghost.y--;
+    else if (targetY > ghost.y) ghost.y++;
+    return;
+  }
+
   const moves = [
     { x: 0, y: -1 },
     { x: 0, y: 1 },
