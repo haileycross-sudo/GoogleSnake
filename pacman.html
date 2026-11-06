@@ -237,8 +237,14 @@ function moveGhost(ghost) {
   }
 
   if (ghost == blueGhost) {
-    if (pacman.x < ghost.x) ghost.x--;
-    else if (pacman.x > ghost.x) ghost.x++;
+    let targetX = (pacman.x + redGhost.x) / 2;
+    let targetY = (pacman.y + redGhost.y) / 2;
+    targetX = Math.max(0, Math.min(columns - 1, targetX));
+    targetY = Math.max(0, Math.min(rows - 1, targetY));
+    if (targetX < ghost.x) ghost.x--;
+    else if (targetX > ghost.x) ghost.x++;
+    if (targetY < ghost.y) ghost.y--;
+    else if (targetY > ghost.y) ghost.y++;
     return;
   }
 
