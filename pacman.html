@@ -93,6 +93,20 @@ body {
 
 <script>
 const canvas = document.getElementById('game-board');
+const walls = [
+  { x: 5, y: 0, width: 1, height: 8 },
+  { x: 9, y: 0, width: 1, height: 4 },
+  { x: 9, y: 5, width: 1, height: 3 },
+  //{ x: 0, y: 4, width: 8, height: 1 },
+  //{ x: 0, y: 3, width: 8, height: 1 },
+  //{ x: 9, y: 2, width: 8, height: 1 },
+  //{ x: 0, y: 0, width: 8, height: 1 },
+  //{ x: 0, y: 7, width: 8, height: 1 },
+  //{ x: 7, y: 0, width: 1, height: 8 },
+  //{ x: 0, y: 0, width: 6, height: 0 },
+  //{ x: 0, y: 0, width: 1, height: 0 },
+  //{ x: 0, y: 0, width: 8, height: 0 }
+];
 const ctx = canvas.getContext('2d');
 const messageBox = document.getElementById('message-box');
 const startButton = document.getElementById('start-button');
@@ -155,6 +169,18 @@ function drawGhost(ghost, color) {
 
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.walls = walls;
+  ctx.fillStyle = '#f8fafc';
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 2;
+  walls.forEach((wall) => {
+    const x = wall.x * gridSize;
+    const y = wall.y * gridSize;
+    const width = wall.width * gridSize;
+    const height = wall.height * gridSize;
+    ctx.fillRect(x, y, width, height);
+    ctx.strokeRect(x, y, width, height);
+  });
   ctx.fillStyle = '#f8fafc';
   ctx.beginPath();
   ctx.arc(food.x * gridSize + gridSize / 2, food.y * gridSize + gridSize / 2, gridSize / 5, 0, Math.PI * 2);
@@ -249,6 +275,15 @@ function moveGhost(ghost) {
   }
 
   if (ghost == orangeGhost) {
+  let targetX = pacman.x;
+  let targetY = pacman.y;
+  const distance = Math.sqrt((ghost.x - pacman.x) ** 2 + (ghost.y - pacman.y) ** 2);
+  if (distance < 5) {
+    targetX = columns - 1 - pacman.x;
+    targetY = rows - 1 - pacman.y;
+  }
+  targetX = Math.max(0, Math.min(columns - 1, targetX));
+  targetY = Math.max(0, Math.min(rows - 1, targetY));
     if (pacman.x < ghost.x + 8) ghost.x--;
     else if (pacman.x > ghost.x + 8) ghost.x++;
     if (pacman.y < ghost.y + 8) ghost.y--;
