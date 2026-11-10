@@ -79,7 +79,7 @@ body {
 }
 </style>
 <body>
-    <canvas id="game-board" width="800" height="500"></canvas>
+    <canvas id="game-board" width="800" height="525"></canvas>
     <div id="scoreboard">Score: <span id="score-display">0</span></div>
 
     </div>
@@ -94,18 +94,16 @@ body {
 <script>
 const canvas = document.getElementById('game-board');
 const walls = [
-  { x: 5, y: 0, width: 1, height: 8 },
-  { x: 9, y: 0, width: 1, height: 4 },
-  { x: 9, y: 5, width: 1, height: 3 },
-  //{ x: 0, y: 4, width: 8, height: 1 },
-  //{ x: 0, y: 3, width: 8, height: 1 },
-  //{ x: 9, y: 2, width: 8, height: 1 },
-  //{ x: 0, y: 0, width: 8, height: 1 },
-  //{ x: 0, y: 7, width: 8, height: 1 },
-  //{ x: 7, y: 0, width: 1, height: 8 },
-  //{ x: 0, y: 0, width: 6, height: 0 },
-  //{ x: 0, y: 0, width: 1, height: 0 },
-  //{ x: 0, y: 0, width: 8, height: 0 }
+  { x: 1, y: 1, width: 30, height: 1 },
+  { x: 1, y: 3, width: 30, height: 1 },
+  { x: 1, y: 5, width: 30, height: 1 },
+  { x: 1, y: 7, width: 30, height: 1 },
+  { x: 1, y: 9, width: 30, height: 1 },
+  { x: 1, y: 11, width: 30, height: 1 },
+  { x: 1, y: 13, width: 30, height: 1 },
+  { x: 1, y: 15, width: 30, height: 1 },
+  { x: 1, y: 17, width: 30, height: 1 },
+  { x: 1, y: 19, width: 30, height: 1 },
 ];
 const ctx = canvas.getContext('2d');
 const messageBox = document.getElementById('message-box');
@@ -170,9 +168,9 @@ function drawGhost(ghost, color) {
 function drawGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.walls = walls;
-  ctx.fillStyle = '#f8fafc';
+  ctx.fillStyle = '#30304a';
   ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 5;
   walls.forEach((wall) => {
     const x = wall.x * gridSize;
     const y = wall.y * gridSize;
@@ -255,10 +253,13 @@ function endGame(message) {
 function moveGhost(ghost) {
 
   if (ghost == redGhost) {
-    if (pacman.x < ghost.x) ghost.x--;
-    else if (pacman.x > ghost.x) ghost.x++;
-    if (pacman.y < ghost.y) ghost.y--;
-    else if (pacman.y > ghost.y) ghost.y++;
+    if (Math.abs(pacman.x - ghost.x) > Math.abs(pacman.y - ghost.y)) {
+      if (pacman.x < ghost.x) ghost.x--;
+      else if (pacman.x > ghost.x) ghost.x++;
+    } else {
+      if (pacman.y < ghost.y) ghost.y--;
+      else if (pacman.y > ghost.y) ghost.y++;
+    }
     return;
   }
 
@@ -267,10 +268,13 @@ function moveGhost(ghost) {
     let targetY = (pacman.y + redGhost.y) / 2;
     targetX = Math.max(0, Math.min(columns - 1, targetX));
     targetY = Math.max(0, Math.min(rows - 1, targetY));
-    if (targetX < ghost.x) ghost.x--;
-    else if (targetX > ghost.x) ghost.x++;
-    if (targetY < ghost.y) ghost.y--;
-    else if (targetY > ghost.y) ghost.y++;
+    if (Math.abs(targetX - ghost.x) > Math.abs(targetY - ghost.y)) {
+      if (targetX < ghost.x) ghost.x--;
+      else if (targetX > ghost.x) ghost.x++;
+    } else {
+      if (targetY < ghost.y) ghost.y--;
+      else if (targetY > ghost.y) ghost.y++;
+    }
     return;
   }
 
@@ -284,10 +288,13 @@ function moveGhost(ghost) {
   }
   targetX = Math.max(0, Math.min(columns - 1, targetX));
   targetY = Math.max(0, Math.min(rows - 1, targetY));
-    if (pacman.x < ghost.x + 8) ghost.x--;
-    else if (pacman.x > ghost.x + 8) ghost.x++;
-    if (pacman.y < ghost.y + 8) ghost.y--;
-    else if (pacman.y > ghost.y + 8) ghost.y++;
+    if (Math.abs(targetX - ghost.x) > Math.abs(targetY - ghost.y)) {
+      if (targetX < ghost.x) ghost.x--;
+      else if (targetX > ghost.x) ghost.x++;
+    } else {
+      if (targetY < ghost.y) ghost.y--;
+      else if (targetY > ghost.y) ghost.y++;
+    }
     return;
   }
 
@@ -303,13 +310,15 @@ function moveGhost(ghost) {
     } else if (direction === 'right') {
       targetX += 4;
     }
-
     targetX = Math.max(0, Math.min(columns - 1, targetX));
     targetY = Math.max(0, Math.min(rows - 1, targetY));
-    if (targetX < ghost.x) ghost.x--;
-    else if (targetX > ghost.x) ghost.x++;
-    if (targetY < ghost.y) ghost.y--;
-    else if (targetY > ghost.y) ghost.y++;
+    if (Math.abs(targetX - ghost.x) > Math.abs(targetY - ghost.y)) {
+      if (targetX < ghost.x) ghost.x--;
+      else if (targetX > ghost.x) ghost.x++;
+    } else {
+      if (targetY < ghost.y) ghost.y--;
+      else if (targetY > ghost.y) ghost.y++;
+    }
     return;
   }
 
